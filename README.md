@@ -89,3 +89,9 @@ docker cp wp1:/var/www /var/www/
 
 sudo docker update --restart unless-stopped $(sudo docker ps -q)
 ```
+
+```
+#List networks
+
+docker network ls
+```
