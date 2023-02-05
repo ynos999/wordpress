@@ -4,6 +4,8 @@
 
 Before start project you need install docker and docker compose.
 
+Please, in .env file change database names and passwords, before use command sudo docker-compose up -d...
+
 ```
 sudo apt update -y
 
