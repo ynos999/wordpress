@@ -1,0 +1,215 @@
+version: '3.8'
+
+services:
+  wordpress1:
+    image: wordpress:latest
+    ports:
+      - "8000:80"
+    restart: always
+    container_name: wp1
+    environment:
+      WORDPRESS_DB_HOST: "db1:3306"
+      WORDPRESS_DB_NAME: ${DB1_NAME}
+      WORDPRESS_DB_USER: ${DB1_USER}
+      WORDPRESS_DB_PASSWORD: ${DB1_PASSWORD}
+    volumes:
+      - wp1-data:/var/www/html
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.2
+    env_file:
+      - .env
+
+  wordpress2:
+    image: wordpress:latest
+    ports:
+      - "8001:80"
+    restart: always
+    container_name: wp2
+    environment:
+      WORDPRESS_DB_HOST: "db2:3306"
+      WORDPRESS_DB_NAME: ${DB2_NAME}
+      WORDPRESS_DB_USER: ${DB2_USER}
+      WORDPRESS_DB_PASSWORD: ${DB2_PASSWORD}
+    volumes:
+      - wp2-data:/var/www/html
+    depends_on:
+      - wordpress1
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.3
+    env_file:
+      - .env
+
+  wordpress3:
+    image: wordpress:latest
+    ports:
+      - "8002:80"
+    restart: always
+    container_name: wp3
+    environment:
+      WORDPRESS_DB_HOST: "db3:3306"
+      WORDPRESS_DB_NAME: ${DB3_NAME}
+      WORDPRESS_DB_USER: ${DB3_USER}
+      WORDPRESS_DB_PASSWORD: ${DB3_PASSWORD}
+    volumes:
+      - wp3-data:/var/www/html
+    depends_on:
+      - wordpress1
+      - wordpress2
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.4
+    env_file:
+      - .env
+
+  wordpress4:
+    image: wordpress:latest
+    ports:
+      - "8003:80"
+    restart: always
+    container_name: wp4
+    environment:
+      WORDPRESS_DB_HOST: "db4:3306"
+      WORDPRESS_DB_NAME: ${DB4_NAME}
+      WORDPRESS_DB_USER: ${DB4_USER}
+      WORDPRESS_DB_PASSWORD: ${DB4_PASSWORD}
+    volumes:
+      - wp4-data:/var/www/html
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.5
+    env_file:
+      - .env
+
+  db1:
+    image: mysql:8.0
+    restart: always
+    container_name: db1
+    environment:
+      MYSQL_DATABASE: ${DB1_NAME}
+      MYSQL_USER: ${DB1_USER}
+      MYSQL_PASSWORD: ${DB1_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB1_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db1-data:/var/lib/mysql
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+      - wordpress4
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.6
+        aliases:
+           - db1
+    env_file:
+      - .env
+
+  db2:
+    image: mysql:8.0
+    restart: always
+    container_name: db2
+    environment:
+      MYSQL_DATABASE: ${DB2_NAME}
+      MYSQL_USER: ${DB2_USER}
+      MYSQL_PASSWORD: ${DB2_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB2_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db2-data:/var/lib/mysql
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+      - wordpress4
+      - db1
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.7
+        aliases:
+            - db2
+    env_file:
+      - .env
+
+  db3:
+    image: mysql:8.0
+    restart: always
+    container_name: db3
+    environment:
+      MYSQL_DATABASE: ${DB3_NAME}
+      MYSQL_USER: ${DB3_USER}
+      MYSQL_PASSWORD: ${DB3_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB3_ROOT_PASSWORD}
+    ports:
+      - "3308:3306"
+    volumes:
+      - db3-data:/var/lib/mysql
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+      - wordpress4
+      - db1
+      - db2
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.8
+        aliases:
+            - db3
+    env_file:
+      - .env
+
+  db4:
+    image: mysql:8.0
+    restart: always
+    container_name: db4
+    environment:
+      MYSQL_DATABASE: ${DB4_NAME}
+      MYSQL_USER: ${DB4_USER}
+      MYSQL_PASSWORD: ${DB4_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB4_ROOT_PASSWORD}
+    ports:
+      - "3309:3306"
+    volumes:
+      - db4-data:/var/lib/mysql
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+      - wordpress4
+      - db1
+      - db2
+      - db3
+    networks:
+      default:
+        ipv4_address: ${IP_PREFIX}.9
+        aliases:
+            - db4
+    env_file:
+      - .env
+
+volumes:
+  wp1-data:
+  wp2-data:
+  wp3-data:
+  wp4-data:
+  db1-data:
+  db2-data:
+  db3-data:
+  db4-data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${IP_PREFIX}.0/24
+          gateway: ${IP_PREFIX}.1
