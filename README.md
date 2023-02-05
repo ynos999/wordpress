@@ -6,6 +6,8 @@ Before start project you need install docker and docker compose.
 
 Please, in .env file change database names and passwords, before use command sudo docker-compose up -d...
 
+Docker network IP range: 10.0.3.0/24
+
 ```
 sudo apt update -y
 
